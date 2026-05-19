@@ -23,6 +23,8 @@ That’s worrisome because email verification is currently done insecurely and i
 
 The mechanism used to verify email addresses currently in deployment is: once an email is acquired (e.g. through an input box), websites generate, store and send a non-guessable code (or link which embeds the code, known as a “magic link”) to the user’s email inbox. The user proves ownership of the email address by accessing their email inbox, gathering the non-guessable code and sending it to the website (e.g. copying/pasting it in an input box or clicking on the magic link), which can then compare to what was stored ahead of time.
 
+<img width="1152" height="864" alt="Email Verification Tokens (EVTs) (3)" src="https://github.com/user-attachments/assets/2a18ba73-38de-4251-aca6-0a72159791df" />
+
 The main security concern with this mechanism is phishing: any attacking website can convince users (e.g. with social engineering) to access their email account and provide the code to the attacking website. In possession of the code and the email address, the attacker can then login as the user on the victim website. This is sometimes prevented by shortening the expiration time of the non-guessable code, but is still phishable nonetheless.
 
 Aside from the security concerns, this process is also cumbersome for users and inefficient for websites: (a) it relies on the delivery of emails (e.g. automated emails take a while to arrive and can and do often go into spam folders) and (b) switching the user’s context from the website to their email (web or native) app.
@@ -58,6 +60,9 @@ There are many other ways that we could expose this API to websites, which you c
 When the website exposes this extra `<input>` requesting an `autocomplete="email-verification-token"`, the browser observes when users select an email in an input box that belongs to the same form.
 
 When the user selects an email in the input box, the browser presupposes that the email provider exposes itself as an EVP-compatible provider ahead of time by implementing the [EVP protocol](https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html).
+
+<img width="1280" height="960" alt="Email Verification Tokens (EVTs) (4)" src="https://github.com/user-attachments/assets/eb27296a-19eb-4b45-9591-5f00dfd469aa" />
+
 
 The browser starts by [discovering the issuer](https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html#name-issuer-discovery) associated with the email address  (which can, but doesn’t have to, be same-site with the email provider, e.g. allows [gmail.com](http://gmail.com) to delegate EVTs to [accounts.google.com](http://accounts.google.com)), via a DNS TXT record set ahead of time:
 
@@ -98,9 +103,12 @@ Upon form submission, because the browser has filled the value of the \<input\> 
 
 We are still exploring various permission models (see the Open Questions section below) and trying to understand the various privacy properties involved.
 
-Each browser implementation is responsible for making their own judgement based on their user’s expectations, so both this explainer as well as the specification isn’t opinionated about how the interface with the user materializes..
+Each browser implementation is responsible for making their own judgement based on their user’s expectations, so both this explainer as well as the specification isn’t opinionated about how the interface with the user materializes.
 
 But to give you a sense of one possible materialization, here is one possible concrete implementation:
+
+<img width="1152" height="864" alt="Email Verification Tokens (EVTs) (5)" src="https://github.com/user-attachments/assets/635f03bd-aedc-4c3c-8461-1672c22b8186" />
+
 
 Once the user is happy with the email that they want to select, when the user submits the form the browser sets the value of the \<input\> element that contains the “email-verification-token” autocomplete tag with the bound EVT if one is available (i.e. it doesn’t block the form submission if one is not).
 
