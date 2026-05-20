@@ -187,6 +187,18 @@ It might be also be possible for the browser to talk to the wallets directly thr
 
 There are a few things that we are still unsure about:
 
+## Can this handle directed email addresses?
+
+We believe that it is possible to reconcile this proposal well with directed email addresses, but this is still an area of open investigation:
+
+[https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html\#name-private-email-addresses](https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html#name-private-email-addresses)   
+
+## What should happen when users are logged out of the email provider / issuer?
+
+We think it is plausible that the browser might be able to help the user user login to the email provider / issuer inline in the flow. It is not quite clear to us yet how, but one of the intuitions is that we can offer a streamlined experience through passkeys:
+
+[https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html\#name-webauthn-authentication](https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html#name-webauthn-authentication) 
+
 ## Is the permission prompt strictly necessary?
 
 It is unclear to us right now what, if any, is the value of the permission prompt: from first principles, what does the website learn that it wouldn’t otherwise learn, and does that require user permission?
@@ -416,7 +428,3 @@ Asides from that, here are a few considerations we are working through:
 - Client-side injection?  
   - Should we protect “challenge” and “value” from script? [https://bsky.app/profile/sgo.to/post/3mlbpzl3abc2y](https://bsky.app/profile/sgo.to/post/3mlbpzl3abc2y) 
 
-# Future Work
-
-- Directed emails: [https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html\#name-private-email-addresses](https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html#name-private-email-addresses)   
-- Logged-out users and Passkeys: [https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html\#name-webauthn-authentication](https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html#name-webauthn-authentication) 
