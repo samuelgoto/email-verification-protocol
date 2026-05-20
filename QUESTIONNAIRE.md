@@ -79,6 +79,8 @@ Yes.
 
 We expect we'll need to introduce an explicit permission to the user before performing an automatic verification. While that's largely a choice each user agent has control of (in terms of the frequency and UX materialization), we do expect one to have.
 
+We expect that the native UI would be triggered by user action (typing/selecting the email), and that the only customizable thing is the issuer site (and the email address from the user).
+
 So, along the lines of any other permissioned API, we expect this one to give an origin the ability to trigger that permission programatically.
 
 https://github.com/samuelgoto/email-verification-protocol#permission-model
