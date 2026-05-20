@@ -226,7 +226,7 @@ That is, this example seems to assume that every form will have one and only one
 
 Email Verification is a broad area and there are multiple ways that we can accomplish this.
 
-## Userland
+## Can't this be done in userland?
 
 There are some aspects of this proposal that could have been done in userland, but not all of it.
 
@@ -236,9 +236,11 @@ Second, even with access to third party cookies, you’d need a neutral intermed
 
 We think part of the reason the problem of email verification hasn’t been solved yet is because this proposal relies on changing the browser.
 
-## WebOTP (OTPs vs EVTs and IMAP)
+## What if we activated email clients, rather than email providers?
 
-One of the main forks on the road that we considered was whether to facilitate email providers providing an OTP or an EVT, for example, via:
+One of the main forks on the road that we considered was whether to facilitate email providers providing an OTP or an EVT, for example, via augmentin WebOTP / `autocomplete="one-time-code"`. 
+
+For example:
 
 [https://github.com/samuelgoto/email-otp](https://github.com/samuelgoto/email-otp) 
 
@@ -259,7 +261,7 @@ There are two big variations that we explored:
 - JS Imperative APIs and   
 - HTML Declarative APIs
 
-### Imperative APIs
+### Have you looked at imperative APIs?
 
 Within the JS Imperative API space, we explored augment three options:
 
@@ -295,7 +297,7 @@ The cons are:
 - We’d like to release the token and resolve the promise upon form submission, rather than email selection, which makes “conditional” inconsistent with how WebAuthn works.  
 - The developer is responsible for manually taken the value of the token and inserting into an input field (more control for developers but at the cost of being more work too)
 
-### Declarative HTML API
+### Have you looked at declarative APIs?
 
 There are a series of variations of ways we could expose this as a HTML API. Here are a few that occurred to us and their trade-offs.
 
