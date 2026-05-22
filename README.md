@@ -43,10 +43,10 @@ When all of these conditions  are met (see activation considerations below), the
 
 When some of these conditions aren’t met, the proposal degrades gracefully to the status quo: a plain-text and unverified email address, which the website proceeds as it normally would manually verifying it.
 
-To participate, websites need to explicitly and proactively add to their HTML forms an additional \<input\> element with (a) an "email-verification-token" in the “autocomplete” attribute and (b) a dynamically generated non-guessable code that is stored server-side in a newly introduced “nonce” attribute.
+To participate, websites need to explicitly and proactively add to their HTML forms an additional \<input\> element with (a) an `email-verification-token` in the “autocomplete” attribute and (b) a dynamically generated non-guessable code that is stored server-side in a newly introduced `nonce` attribute.
 
 ```html
-  <input type="hidden" name="token"  nonce="<?php generate_nonce() ?>" autocomplete="email-verification-token">
+<input type="hidden" name="token" nonce="<?php generate_nonce() ?>" autocomplete="email-verification-token">
 ```
 
 There are many other ways that we could expose this API to websites, which you can find in the alternatives considered and under consideration section below.
@@ -171,7 +171,7 @@ Much like EVTs are designed to augment WebAuthn and FedCM, we expect EVTs could 
 
 So, for example, if a website requested an EVT, and a native application (say, a digital wallet) had one registered at the OS level, the browser would be able to provide it through the autocomplete UX.
 
-One immediate implementation nonce we face is that autofill UX is entirely done in the browser memory address space, whereas all of the digital credentials are aggregated at the operating system address space, so it is not clear how we’d augment them in autofill. One plausible answer is if we made the OS share the metadata with browsers, which is similar to how passkeys work on browsers on Android and iOS.
+One immediate implementation challenge we face is that autofill UX is entirely done in the browser memory address space, whereas all of the digital credentials are aggregated at the operating system address space, so it is not clear how we’d augment them in autofill. One plausible answer is if we made the OS share the metadata with browsers, which is similar to how passkeys work on browsers on Android and iOS.
 
 If/when we get to that point (where OSes share the metadata of the credentials with browsers), browsers could make them available in the EVT autocomplete.
 
@@ -214,7 +214,7 @@ It seems to us that you could make the system quite a bit more generic by changi
 
 Mike West notes: what happens when forms have two email addresses?
 
-That is, this example seems to assume that every form will have one and only one email address field, in which case it's trivial to find the \`type=email\` field and bind it to the hidden input field's nonce for the verification request. Some forms contain more than one email address, however. For example, there are  governmental forms that ask for both work and personal email, and I can imagine such entities wanting verification of those fields if it was easily possible (they don't ask for it today, or didn't in this specific case). How could that be supported? 
+That is, this example seems to assume that every form will have one and only one email address field, in which case it's trivial to find the \`type=email\` field and bind it to the hidden input field's `nonce` for the verification request. Some forms contain more than one email address, however. For example, there are  governmental forms that ask for both work and personal email, and I can imagine such entities wanting verification of those fields if it was easily possible (they don't ask for it today, or didn't in this specific case). How could that be supported? 
 
 # Alternatives Considered
 
@@ -316,7 +316,7 @@ input.addEventListener('emailverified', e => {
 
 The main reason we moved away from this formulation was because we wanted to tie the EVT release with the form submission, and dispatching an event to coordinate with the onsubmit handler seemed unnecessary complex.
 
-From there, our second intuition was to leave “nonce” in the \<input type=”email”\> and hard-code a special value that gets submitted into the form:
+From there, our second intuition was to leave `nonce` in the `<input type=”email”>` and hard-code a special value that gets submitted into the form:
 
 ```html
 <form action="signup.php" method="POST">
@@ -332,7 +332,7 @@ POST signup.php
 email=foobar@gmail.com&email.__verification__=456
 ```
 
-Having a “nonce” associated with an \<input type=”email”\> seemed awkward, so we looked into maybe introducing a new element type, say, `<nonce>`: 
+Having a `nonce` associated with an `<input type=”email”>` seemed awkward, so we looked into maybe introducing a new element type, say, `<nonce>`: 
 
 ```html
 <form action="signup.php" method="POST">
@@ -341,13 +341,13 @@ Having a “nonce” associated with an \<input type=”email”\> seemed awkwar
 </form>
 ```
 
-Introducing a \<nonce\> seemed like overkill, so we then considered “what if we create a new \<input\> type”, say “verification”?
+Introducing a `<nonce>` seemed like overkill, so we then considered “what if we create a new `<input>` type”, say `“verification”`?
 
 ```
  <input type="verification" for="email" nonce="1234" name="token">
 ```
 
-That seemed like it would have all sorts of good properties, including that we could declare `nonce` and also `name`, solving both how you provide the `input` to the EVP algorithm with the nonce but also how EVP could “output” the result with the “name” property and how it is used in form submission, addressing the awkward “reserved” form submission parameter name.
+That seemed like it would have all sorts of good properties, including that we could declare `nonce` and also `name`, solving both how you provide the `input` to the EVP algorithm with the `nonce` but also how EVP could “output” the result with the “name” property and how it is used in form submission, addressing the awkward “reserved” form submission parameter name.
 
 `<input type="verification">` degrades gracefully to `<input type="text">` when the browser doesn’t know what it is, so we’d have to include a `style: display: none` in it if we wanted to make it invisible.
 
@@ -410,7 +410,7 @@ Asides from that, here are a few considerations we are working through:
   - While the protocol described is using fairly well-established parts, when we put them together, have we introduced any additional attack? [https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html](https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html)   
   - Are the default crypto choices sensible?  
   - The proposal relies on DNS. Is DNS sufficiently secure if we resolve them server side?  
-  - Should we include the nonce in the form submission?  
+  - Should we include the `nonce` in the form submission?  
 - Can EVTs be requested in subframes?  
   - Should we require permission policies for cross origin iframes?  
   - Should we disable this in fenced frames?  
@@ -422,5 +422,5 @@ Asides from that, here are a few considerations we are working through:
   - It might be valuable to limit this verification mechanism's potential leakage of user state cross-origin by rejecting verification responses that contain `Access-Control-*` headers. (*User agents that limit third-party cookie access would mitigate this leak, but it's worth considering what we'd like the behavior to be for user agents that allow them. With CORS headers, this mechanism would provide a very straightforward user identification mechanism, especially in the ["issue all credentials" alternative discussed above](#heading=h.qd2yaibbowlw).*)  
   - Perhaps servers should return a signed "nope" response rather than an `authentication_required` error, which seems like it would mitigate some network-level distinctions that could be inferred without access to the RP's private key?  
 - Client-side injection?  
-  - Should we protect “nonce” and “value” from script? [https://bsky.app/profile/sgo.to/post/3mlbpzl3abc2y](https://bsky.app/profile/sgo.to/post/3mlbpzl3abc2y) 
+  - Should we protect `nonce` and “value” from script? [https://bsky.app/profile/sgo.to/post/3mlbpzl3abc2y](https://bsky.app/profile/sgo.to/post/3mlbpzl3abc2y) 
 
