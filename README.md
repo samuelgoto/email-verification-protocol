@@ -46,7 +46,7 @@ When some of these conditions aren’t met, the proposal degrades gracefully to 
 To participate, websites need to explicitly and proactively add to their HTML forms an additional \<input\> element with (a) an "email-verification-token" in the “autocomplete” attribute and (b) a dynamically generated non-guessable code that is stored server-side in a newly introduced “nonce” attribute.
 
 ```html
-  <input type="hidden" name="token"  nonce="<?php server_side_generate_nonce() ?>" autocomplete="email-verification-token">
+  <input type="hidden" name="token"  nonce="<?php generate_nonce() ?>" autocomplete="email-verification-token">
 ```
 
 There are many other ways that we could expose this API to websites, which you can find in the alternatives considered and under consideration section below.
