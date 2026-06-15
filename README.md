@@ -92,6 +92,9 @@ Alternatively, via HTTP headers:
 Set-Login: logged-in
 ```
 
+This bit is then later used in the [accounts request](#33-accounts-request) step.
+
+
 > Calling the Login Status API also allows the browser to discover the [`login_url`](https://w3c-fedid.github.io/FedCM/#dom-identityproviderapiconfig-login_url), which allows the browser to know how to programaticaly log the user in. This feature is not yet supported and is noted as an [open question](#what-should-happen-when-users-are-logged-out-of-the-email-provider--issuer).
 
 ## 2.1 EVT Request
