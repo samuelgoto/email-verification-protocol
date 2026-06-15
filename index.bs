@@ -129,11 +129,13 @@ When the user selects an email address |email| from the user agent's autofill su
     4.  If |accountMatch| is false, terminate these steps.
     5.  Show a user prompt asking for permission to verify the email address |email| with |issuer|.
     6.  If the user denies permission, terminate these steps.
-    7.  Let |evt| be the result of performing the [EVT issuance](https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html#name-evt-issuance) steps defined in [[!EVP-Protocol]] for |email| from |issuer|.
-    8.  If |evt| is null, terminate these steps.
-    9.  Let |kbEvt| be the result of performing the [key-binding creation](https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html#name-kb-creation) steps defined in [[!EVP-Protocol]] on |evt| with |nonce| and the origin of the document.
-    10. Let |state| be |form|'s EVP state.
-    11. If |state| is not null and |state|'s `email` is case-insensitively equal to |email|:
+    7.  Let |evtResult| be the result of performing [=EVT Issuance=] for |email| from |issuer|.
+    8.  If |evtResult| is null, terminate these steps.
+    9.  Let |evt| be |evtResult|[0].
+    10. Let |keyPair| be |evtResult|[1].
+    11. Let |kbEvt| be the result of performing the [key-binding creation](https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html#name-kb-creation) steps defined in [[!EVP-Protocol]] on |evt| using the private key component of |keyPair|, with |nonce| and the origin of the document.
+    12. Let |state| be |form|'s EVP state.
+    13. If |state| is not null and |state|'s `email` is case-insensitively equal to |email|:
         1.  Set |state|'s `token` to |kbEvt|.
 
 ## Form Submission Integration ## {#form-submission}
@@ -168,6 +170,38 @@ Given an email address |email| and an issuer domain |issuer|, the user agent MUS
     2.  If |accountEmail| is case-insensitively equal to |email|, return true.
 10. Return false.
 
+## <dfn>EVT Issuance</dfn> ## {#algo-issuance}
+
+Given an email address |email| and an issuer domain |issuer|, the user agent MUST perform the following steps to obtain an EVT:
+
+1.  Generate an ephemeral asymmetric key pair |keyPair| (using an algorithm supported by the issuer, as defined in the issuer's metadata, defaulting to Ed25519 if not specified).
+2.  Construct a JSON Web Token [[JWT]] |requestToken|:
+    1.  The header MUST contain:
+        *   `alg`: The signing algorithm (matching |keyPair|'s algorithm).
+        *   `jwk`: The public key component of |keyPair|.
+    2.  The payload MUST contain:
+        *   `aud`: The |issuer|'s identifier (domain).
+        *   `iat`: The current time.
+        *   `email`: The |email| address.
+    3.  Sign |requestToken| using the private key component of |keyPair|.
+3.  Let |issuanceUrl| be the issuer's token issuance endpoint (obtained from the issuer's metadata).
+4.  Construct an HTTP POST request |request| to |issuanceUrl|:
+    1.  Set the `Content-Type` header to `application/x-www-form-urlencoded`.
+    2.  Set the `Sec-Fetch-Dest` header to `email-verification`.
+    3.  Include first-party cookies for |issuer|.
+    4.  Set the request body to the URL-encoded representation of:
+        `request_token` = |requestToken| (serialized as a string).
+5.  Send |request| and wait for the response |callResponse|.
+6.  If |callResponse|'s status code is not 200 OK or its `Content-Type` is not `application/json`, return null.
+7.  Parse |callResponse|'s body as JSON and let |json| be the result.
+8.  If |json| does not contain `issuance_token`, return null.
+9.  Let |evt| be |json|'s `issuance_token`.
+10. Verify |evt|:
+    1.  Verify |evt| is a valid SD-JWT [[SD-JWT]] signed by the issuer.
+    2.  Verify the `cnf` claim in |evt| contains a public key that matches the public key of |keyPair|.
+    3.  Verify the `email` claim in |evt| matches |email|.
+11. If verification fails, return null.
+12. Return a tuple containing (|evt|, |keyPair|).
 
 # Verifier Processing Model # {#verifier-processing}
 
@@ -216,6 +250,14 @@ Furthermore, the issuer MUST match the email domain (unless delegated explicitly
     "title": "Email Verification Protocol (EVP) Backend",
     "status": "Internet-Draft",
     "publisher": "IETF"
+  },
+  "SD-JWT": {
+    "authors": [ "D. Fett", "K. Yasuda", "B. Campbell" ],
+    "href": "https://www.rfc-editor.org/rfc/rfc9682.html",
+    "title": "Selective Disclosure for JSON Web Tokens (SD-JWT)",
+    "status": "RFC",
+    "publisher": "IETF",
+    "rfcNumber": "9682"
   }
 }
 </pre>

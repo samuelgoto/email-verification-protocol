@@ -187,33 +187,30 @@ https://{issuer}/.well-known/email-verification
 
 The issuer metadata contains a reference to the `issuance_endpoint` `signing_alg_values_supported` which is then used to create an issuance request.
 
-The issuer metadata contains all of the information that the browser can use to [requests an EVT](https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html#name-token-request) from the issuer using first party cookies (without revealing what website the EVT is going to be presented to). 
+The browser generates an ephemeral asymmetric key pair, and constructs a `request_token` which is a signed JWT containing the ephemeral public key (`jwk` in header) and the request details (`email`, `aud` (issuer), and `iat` in payload).
+
+The browser then sends this to the issuer's issuance endpoint using `application/x-www-form-urlencoded` content type, including the issuer's first-party cookies.
 
 For example:
 
-```
+```http
 POST /email-verification/issuance HTTP/1.1
 Host: accounts.issuer.example
 Cookie: session=...
-Content-Type: application/json
+Content-Type: application/x-www-form-urlencoded
 Sec-Fetch-Dest: email-verification
-Signature-Input: sig=("@method" "@authority" "@path" \
-    "cookie" "signature-key");created=1692345600
-Signature: sig=:MEQCIHd8Y8qYKm5e3dV8y....:
-Signature-Key: sig=hwk; kty="OKP"; crv="Ed25519"; \
-    x="JrQLj5P_89iXES9-vFgrIy29clF9CC_oPPsw3c5D0bs"
 
-{"email":"user@example.com"}
+request_token=eyJhbGciOiJFZERTQSIsImp3ayI6eyJrdHkiOiJPS1AiLCJjcnYiOiJFZDI1NTE5IiwieCI6IjExcUdBWWRrOUU2ejdtVDZyazZqMVFuWGI2cFlxNHY5d1hiNnBZcTR2OXcifX0.eyJhdWQiOiJpc3N1ZXIuZXhhbXBsZSIsImlhdCI6MTcyNDA4MzIwMCwiZW1haWwiOiJ1c2VyQGV4YW1wbGUuY29tIn0.signature...
 ```
 
-The [issuance response](https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html#name-evt-issuance) is reponded with an `issuance_token` property:
+The issuer verifies the request, checks the user's session, and returns an `issuance_token` containing a signed SD-JWT (with the `~` separator appended) in a JSON response:
 
-```
+```http
 HTTP/1.1 200 OK
 Content-Type: application/json
 Set-Cookie: session=...; Secure; HttpOnly; SameSite=None
 
-{"issuance_token":"eyJhbGciOiJFZERTQSIsImtpZCI6IjIwMjQtMDgtMTkiLCJ0eXAiOiJldnQrand0In0...~"}
+{"issuance_token":"eyJhbGciOiJFZERTQSIsImtpZCI6IjIwMjQtMDgtMTkiLCJ0eXAiOiJldnAtc2Qtand0In0...~"}
 ```
 
 ## 3.6 KB Creation
