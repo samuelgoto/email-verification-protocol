@@ -77,6 +77,8 @@ Step                                  Website              Browser              
                                          +                    +                    +
 ```
 
+Below, we'll go over each step of the process.
+
 ## 1.1 Login Status
 
 First, everything starts with the user logging in to their email provider's issuer ahead of time. The issuer can notify the browser that they have a logged in user by calling the [Login Status API](https://w3c-fedid.github.io/login-status/):
