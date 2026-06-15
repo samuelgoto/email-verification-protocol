@@ -56,28 +56,30 @@ Step                                  Website              Browser              
                                          |                    |                    |
 3.1 Email Selection                      |         [Obtain email from user]        |
                                          |                    |                    |
-3.2 Accounts Request                     |                    |<---- accounts -----|
+3.2 Issuer Discovery                     |            [Discover issuer]            |
                                          |                    |                    |
-3.3 Permission                           |           [Obtain permission]           |
+3.3 Accounts Request                     |                    |<---- accounts -----|
                                          |                    |                    |
-3.4 Token Request                        |                    |-- POST /issuance ->|
+3.4 Permission                           |           [Obtain permission]           |
                                          |                    |                    |
-3.5 EVT Creation                         |                    |              [Create EVT]
+3.5 Issuance Request                     |                    |-- POST /issuance ->|
                                          |                    |                    |
-3.6 Token Issuance                       |                    |<------ EVT --------|
+3.6 EVT Creation                         |                    |              [Create EVT]
                                          |                    |                    |
-3.7 KB Creation                          |              [Create KB-JWT]            |
+3.7 EVT Issuance                         |                    |<------ EVT --------|
                                          |                    |                    |
-3.8 Token Presentation                   |<----- EVT+KB ------|                    |
+3.8 KB Creation                          |              [Create KB-JWT]            |
                                          |                    |                    |
-4 Token Verification              [Verify EVT+KB]             |                    |
+3.9 EVT Presentation                     |<----- EVT+KB ------|                    |
+                                         |                    |                    |
+4 EVT Verification                [Verify EVT+KB]             |                    |
                                          |                    |                    |
                                          +                    +                    +
 ```
 
-## The Email Provider API
+## 1 Login Status
 
-## The Website API
+## 2 EVT Request
 
 To participate, websites need to explicitly and proactively add to their HTML forms an additional \<input\> element with (a) an `email-verification-token` in the “autocomplete” attribute and (b) a dynamically generated non-guessable code that is stored server-side in a newly introduced `nonce` attribute.
 
