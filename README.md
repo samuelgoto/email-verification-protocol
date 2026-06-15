@@ -114,7 +114,7 @@ There are many other ways that we could expose this API to websites, which you c
 
 When the website exposes this extra `<input>` requesting an `autocomplete="email-verification-token"`, the browser observes when users select an email in an input box that belongs to the same form.
 
-# 3.2 Issuer Discovery
+## 3.2 Issuer Discovery
 
 
 When the user selects an email in the input box, the browser presupposes that the email provider exposes itself as an EVP-compatible provider ahead of time by implementing the [EVP protocol](https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html).
@@ -135,6 +135,16 @@ From the DNS TXT record, the [issuer metadata](https://dickhardt.github.io/email
 https://{issuer}/.well-known/email-verification
 ```
 
+## 3.3 Accounts Request
+
+Once the issuer is discovered,
+
+## 3.4 Permission
+
+Each browser implementation is responsible for making their own judgement based on their user’s expectations, so this specification isn’t opinionated about how the interface with the user materializes.
+
+## 3.5 Issuance Request
+
 The issuer metadata contains all of the information that the browser can use to [requests an EVT](https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html#name-token-request) from the issuer using first party cookies (without revealing what website the EVT is going to be presented to). For example:
 
 ```
@@ -152,24 +162,22 @@ Signature-Key: sig=hwk; kty="OKP"; crv="Ed25519"; \
 {"email":"user@example.com"}
 ```
 
+## 3.6 EVT Creation
+
+## 3.7 EVT Issuance
+
+## 3.8 KB Creation
+
 Once issued, the browser [binds the nonce](https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html#name-kb-creation) and the audience to the EVT (binding both the origin of the website that the EVT is presented to as well as the dynamically generated nonce) and then.
+
+## 3.9 EVT Presentation
 
 The browser awaits for the `<form>` to be submitted, and when it does, it looks for an input with an `autocomplete="email-verification-token"` input field and sets its value before the `onsubmit` event is fired.
 
-Upon form submission, because the browser has filled the value of the \<input\> element with the EVT, the website’s server gets that value in the form submission HTTP handler and is then able to skip the manual verification step by performing an automated [token verification step](https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html#name-token-verification).
+## 4.1 EVT Verification
 
-# Permission model
+Upon form submission, because the browser has filled the value of the `<input>` element with the EVT, the website’s server gets that value in the form submission HTTP handler and is then able to skip the manual verification step by performing an automated [token verification step](https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html#name-token-verification).
 
-We are still exploring various permission models (see the Open Questions section below) and trying to understand the various privacy properties involved.
-
-Each browser implementation is responsible for making their own judgement based on their user’s expectations, so both this explainer as well as the specification isn’t opinionated about how the interface with the user materializes.
-
-But to give you a sense of one possible materialization, here is one possible concrete implementation:
-
-<img width="1152" height="864" alt="Email Verification Tokens (EVTs) (5)" src="https://github.com/user-attachments/assets/635f03bd-aedc-4c3c-8461-1672c22b8186" />
-
-
-Once the user is happy with the email that they want to select, when the user submits the form the browser sets the value of the \<input\> element that contains the “email-verification-token” autocomplete tag with the bound EVT if one is available (i.e. it doesn’t block the form submission if one is not).
 
 # Activation Considerations
 
