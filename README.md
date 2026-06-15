@@ -50,9 +50,9 @@ The next sections go over each of these steps:
 Step                                  Website              Browser              Issuer
                                          |                    |                    |
                                          |                    |                    |
-1 Login Status                           |                    |<---- logged-in ----|
+1.1 Login Status                         |                    |<---- logged-in ----|
                                          |                    |                    |
-2 EVT Request                            |------ nonce ------>|                    |
+2.1 EVT Request                          |------ nonce ------>|                    |
                                          |                    |                    |
 3.1 Email Selection                      |         [Obtain email from user]        |
                                          |                    |                    |
@@ -72,16 +72,33 @@ Step                                  Website              Browser              
                                          |                    |                    |
 3.9 EVT Presentation                     |<----- EVT+KB ------|                    |
                                          |                    |                    |
-4 EVT Verification                [Verify EVT+KB]             |                    |
+4.1 EVT Verification                [Verify EVT+KB]             |                    |
                                          |                    |                    |
                                          +                    +                    +
 ```
 
-## 1 Login Status
+## 1.1 Login Status
 
-## 2 EVT Request
+First, everything starts with the user logging in to their email provider's issuer ahead of time. The issuer can notify the browser that they have a logged in user by calling the [Login Status API](https://w3c-fedid.github.io/login-status/):
 
-To participate, websites need to explicitly and proactively add to their HTML forms an additional \<input\> element with (a) an `email-verification-token` in the “autocomplete” attribute and (b) a dynamically generated non-guessable code that is stored server-side in a newly introduced `nonce` attribute.
+```javascript
+// When the user logs in to the IdP
+navigator.login.setStatus("logged-in");
+```
+
+Alternatively, via HTTP headers:
+
+```
+Set-Login: logged-in
+```
+
+> Calling the Login Status API also allows the browser to discover the [`login_url`](https://w3c-fedid.github.io/FedCM/#dom-identityproviderapiconfig-login_url), which allows the browser to know how to programaticaly log the user in. This feature is not yet supported and is noted as an [open question](#what-should-happen-when-users-are-logged-out-of-the-email-provider--issuer).
+
+## 2.1 EVT Request
+
+Second, websites explicitly and proactively add to their HTML forms an additional `<input>` element with (a) an `email-verification-token` in the `autocomplete` attribute and (b) a dynamically generated non-guessable code that is stored server-side in a newly introduced `nonce` attribute. 
+
+For example:
 
 ```html
 <input
@@ -93,7 +110,12 @@ To participate, websites need to explicitly and proactively add to their HTML fo
 
 There are many other ways that we could expose this API to websites, which you can find in the alternatives considered and under consideration section below.
 
+## 3.1 Email Selection
+
 When the website exposes this extra `<input>` requesting an `autocomplete="email-verification-token"`, the browser observes when users select an email in an input box that belongs to the same form.
+
+# 3.2 Issuer Discovery
+
 
 When the user selects an email in the input box, the browser presupposes that the email provider exposes itself as an EVP-compatible provider ahead of time by implementing the [EVP protocol](https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html).
 
