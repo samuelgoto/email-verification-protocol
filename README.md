@@ -221,7 +221,7 @@ Once the browser has a `EVT+KB` it performs a [verification](https://dickhardt.g
 
 ## 3.8 Form submission
 
-Once the browser has a verified `EVT+KB` it await for form submission beofre it presents the EVT.
+Once the browser has a verified `EVT+KB` it await for form submission before it presents the EVT.
 
 ## 3.9 EVT Presentation
 
