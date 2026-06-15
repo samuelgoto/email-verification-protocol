@@ -116,7 +116,6 @@ When the website exposes this extra `<input>` requesting an `autocomplete="email
 
 ## 3.2 Issuer Discovery
 
-
 When the user selects an email in the input box, the browser presupposes that the email provider exposes itself as an EVP-compatible provider ahead of time by implementing the [EVP protocol](https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html).
 
 <!--
@@ -129,23 +128,63 @@ The browser starts by [discovering the issuer](https://dickhardt.github.io/email
 _email-verification.email-domain.example   TXT   iss=issuer.example
 ```
 
-From the DNS TXT record, the [issuer metadata](https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html#section-3.2) can be found via a well-defined well-known file:
+## 3.3 Accounts Request
+
+Once the issuer is discovered, the browser checks if the user is [logged in](https://w3c-fedid.github.io/login-status/#logged-in) to the issuer. 
+
+If not, it stops here.
+
+If so, the browser fetches all of the accounts that the user is logged in to, to see if the user is logged in to the email that was selected on Step 3.1.
+
+To do so, it starts by [fetching the `.well-known/web-identity` file](https://w3c-fedid.github.io/FedCM/#well-known-file), which allows it to learn two key things:
+
+- The [`accounts endpoint`](https://w3c-fedid.github.io/FedCM/#dom-identityproviderwellknown-accounts_endpoint)
+- The [`login_url`](https://w3c-fedid.github.io/FedCM/#dom-identityproviderwellknown-login_url)
+
+For example:
+
+```json
+{
+  "accounts_endpoint": "...",
+  "login_url": "...",
+}
+```
+
+The former is used by the browser to fetch the list of logged in accounts. 
+
+For example:
+
+```json
+{
+ "accounts": [{
+   "email": "john_doe@idp.example",
+  }, {
+   "email": "johnny@idp.example",
+  }]
+}
+```
+
+The browser goes through every `account` and checks if the user is logged in to the `email` that was selected before. The browser makes a case-insensitive string equality check to see if they match.
+
+> NOTE: possibly, in the future, we might want to deal with normalized emails, such as removing `.` or `+` from them. In the meantime, case insensitity goes a long way.
+
+## 3.4 Permission
+
+Once the browser has discovered the issuer and knows that the user is logged in to the issuer, it is pretty confident that can provide an EVT, so it can choose to ask the user for permission. Each browser implementation is responsible for making their own judgement based on their user’s expectations, so this specification isn’t opinionated about how the interface with the user materializes.
+
+## 3.5 Issuance Request
+
+Once the issuer is discovered, the [issuer metadata](https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html#section-3.2) can be fetched:
 
 ```
 https://{issuer}/.well-known/email-verification
 ```
 
-## 3.3 Accounts Request
+The issuer metadata contains a reference to the `issuance_endpoint` `signing_alg_values_supported` which is then used to create an issuance request.
 
-Once the issuer is discovered,
+The issuer metadata contains all of the information that the browser can use to [requests an EVT](https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html#name-token-request) from the issuer using first party cookies (without revealing what website the EVT is going to be presented to). 
 
-## 3.4 Permission
-
-Each browser implementation is responsible for making their own judgement based on their user’s expectations, so this specification isn’t opinionated about how the interface with the user materializes.
-
-## 3.5 Issuance Request
-
-The issuer metadata contains all of the information that the browser can use to [requests an EVT](https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html#name-token-request) from the issuer using first party cookies (without revealing what website the EVT is going to be presented to). For example:
+For example:
 
 ```
 POST /email-verification/issuance HTTP/1.1
